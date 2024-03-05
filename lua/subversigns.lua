@@ -86,7 +86,7 @@ function M.subversign_my_buffer()
 
     -- for each all hunks, apply signs
     for line in vim.gsplit(diff, "\n") do
-        local hunk_type, start_line, end_line = string.match(line, "%d,?%d?(.)(%d),?(%d?)")
+        local hunk_type, start_line, end_line = string.match(line, "%d+,?%d*(.)(%d+),?(%d*)")
 
         if (not hunk_type) then
             goto continue
