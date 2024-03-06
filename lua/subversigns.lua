@@ -11,11 +11,16 @@ local HunkType = {
 }
 
 --- Executes a diff on the current buffer
---- @return string diff output of the diff command
+--- @return string | nil diff output of the diff command or nothing if an error occured
 local function run_diff()
     local buf_nr = vim.api.nvim_get_current_buf()
     local file_name = vim.api.nvim_buf_get_name(buf_nr)
-    return vim.fn.system({ "svn", "diff", "--diff-cmd=diff", "-x", "--normal", file_name })
+    local ok, output = pcall(vim.fn.system, { "svn", "diff", "--diff-cmd=diff", "-x", "--normal", file_name })
+    if (ok) then
+        return output
+    else
+        return nil
+    end
 end
 
 
@@ -91,6 +96,10 @@ function M.subversign_my_buffer()
 
     -- run diff
     local diff = run_diff()
+
+    if (not diff) then
+        return
+    end
 
     -- for each all hunks, apply signs
     for line in vim.gsplit(diff, "\n") do
